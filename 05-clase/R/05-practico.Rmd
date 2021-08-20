@@ -1,0 +1,130 @@
+---
+title: "Tidydata y manipulación de datos"
+linktitle: "5: Tidydata y manipulación de datos"
+date: "2021-08-13"
+menu:
+  example:
+    parent: Ejemplos
+    weight: 5
+type: docs
+toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## 0. Objetivo del práctico
+
+El objetivo del presente práctico es aprender a manipular datos, en particular, pivotando sets de datos, para que estos queden en un formato ancho o largo. 
+
+## 1. Recursos de la práctica
+
+Los datos a utilizar provienen del [GitHub del Center for Systems Science and Engineering (CSSE) at Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19), y contienen datos mundiales longitudinales sobre casos confirmados de Covid-19.
+
+## 2. Librerías a utilizar
+
+En este práctico utilizaremos los siguientes paquetes
+
+1. `pacman`: este facilita y agiliza la lectura de los paquetes a utilizar en R
+
+2. `tidyverse`: colección de paquetes, del cuál utilizaremos `tidyr`
+
+3. `tidyr`: permite pivotear los set de datos con los cuales estamos trabajando
+
+4. `lubridate`: para el formato de las fechas
+
+# Procesamiento de datos
+
+## 1. Cargar librerías
+
+Lo primero es _cargar las librerías_ a utilizar. Para ello, acudimos a la función `p_load` del paquete `pacman`. Asumimos que ya está instalado, así que sólo lo cargaremos con la función `library()`
+
+```{r cargar-paquetes, echo=TRUE}
+library(pacman)
+pacman::p_load(tidyverse,
+               tidyr,
+               lubridate)
+```
+
+## 2. Importar bases de datos
+
+Cargaremos los datos 
+
+```{r importar-datos, echo=TRUE}
+datos <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+```
+
+En el panel **Environment**, visualizamos los nuevos objetos, que poseen `r format( nrow(datos), decimal.mark="," , big.mark = ".")` observaciones (o filas) y `r format(ncol(datos), decimal.mark="," , big.mark = ".")` variables (columnas).
+
+## 3. Explorar datos
+
+A continuación, utilizaremos la función `View()` del paquete `base`, para revisar el set de datos.  
+
+```{r explorar-datos, echo=FALSE}
+View(datos)
+```
+
+Ocupamos, además, el comando `head()` del paquete `base`, para revisar las primeras 5 filas del dataset
+
+```{r frq-variables, echo=TRUE}
+head(datos, 5)
+```
+
+Podemos darnos cuenta de que la variable `Country.Region` provee nombres de países; las variables `Lat` y `Long`, coordenadas de posición; y todas las variables siguientes, la **cantidad de casos confirmados de Covid-19** por día. Por ejemplo, X1.22.20, indica los casos confirmados, por país, el día 22 de enero de 2020.  
+
+## 4. Selección de variables
+
+Para efectos de este práctico, las columnas `Province.State`, `Lat` y `Long` no serán utilizados, de modo que las eliminaremos del set de datos con la función `select` del paquete `dplyr`
+
+```{r seleccion, echo=TRUE}
+datos <- datos %>% select(-c(3:4))
+```
+
+Como vemos, ahora el set de datos pasó a tener `r format( nrow(datos), decimal.mark="," , big.mark = ".")` observaciones (o filas) y `r format(ncol(datos), decimal.mark="," , big.mark = ".")` variables (columnas).
+
+Hay, sin embargo, diversos países repetidos. Para ello, sumamos los valores
+
+## 5. Manipulación de datos (tidydata)
+
+Sin embargo, podemos darnos cuenta de que la _información_ proveída por el dataset, así como está, no nos resulta del todo funcional al análisis estadístico ¿Cómo podremos calcular, por ejemplo, el país que ha tenido mayor cantidad de casos a lo largo de la pandemia?
+
+### a) `pivot_longer()`
+
+El problema anterior se debe a que esta tabla se encuentra en formato **wide** (ancho), de modo que cada columna nos muestra la información para cada día. Para solucionarlo, en este caso, acudiremos a la función `pivot_longer()` del paquete `tidyr`, que nos permitirá pivotar la tabla, de modo que tengamos una columna que sólo incluya **fechas**, y otra que sólo incluya **cantidad de casos activos**, facilitando el análisis. En ese sentido, no pivotaremos las columnas `Country.Region` (que en este caso es la columna número 1). Revisamos las últimas 5 filas del dataset con la función `tail` del paquete `base` de R.
+
+```{r pivot-longer, echo=TRUE}
+datos <- datos %>% pivot_longer(cols=-(1:2), names_to = "fecha", values_to = "casos")
+tail(datos, 5)
+```
+
+Podemos darnos cuenta de que ahora nuestro set de datos sólo contiene 3 columnas, pero 160.425 filas. Es decir, la tabla **dejó de ser ancha para pasar a ser larga**.
+
+### Bonus: manipulación de strings y formato "date" (fecha)
+
+Si bien ahora el dataset nos resulta más cómodo para trabajarlo, tenemos un problema con los valores de la variable `fecha` ¿qué hacemos con la X al inicio de cada valor? ¿cómo hacemos que esta información sea legible para R? Para ello, lo primero que debemos realizar es _eliminar las X_ del inicio de cada fecha, para lo cual acudiremos a la función `gsub` del paquete `base` de R, que nos permite **sustituir caracteres** en alguna variable de interés
+
+```{r eliminar-X, echo=TRUE}
+datos$fecha <- gsub("X", "", datos$fecha)
+head(datos, 5)
+```
+
+### b) `pivot_wider()`
+
+También puede suceder el caso contrario: que, para nuestro análisis, necesitemos convertir nuestra tabla larga (long) a una tabla ancha (wide). Para ello, volveremos a emplear el paquete `tidyr`, pero en este caso acudiremos a su función `pivot_wider`, que permite transformar tablas de formato `long` a `wide`
+
+```{r pivot-wider, echo=TRUE}
+datos <- datos %>% pivot_wider(names_from = "fecha", values_from = "casos")
+tail(datos, 5)
+```
+
+¡Y listo! Ya ha vuelto todo a como estuvo en un principio. 
+
+# Resumen
+
+En este práctico aprendimos a
+
+1. Manipular datos (tidydata)
+2. Eliminar caracteres específicos de columnas de nuestro set de datos
+
+# Reporte de progreso
+
+¡No olviden llenar el [reporte de progreso](https://learn-r.formr.org)! En tu correo electrónico está disponible el código mediante al cuál debes acceder para actualizar tu estado de avance del curso.
