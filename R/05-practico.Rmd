@@ -53,7 +53,7 @@ pacman::p_load(tidyverse, #Universo de librerías para manipular datos
 Cargaremos los datos 
 
 ```{r importar-datos, echo=TRUE}
-datos <- readRDS("input/data/ESI2020.rds")
+datos <- readRDS(gzcon(url("https://github.com/learn-R/05-class/blob/main/input/data/ESI2020.rds?raw=true")))
 ```
 
 En el panel **Environment**, visualizamos los nuevos objetos, que poseen `r format( nrow(datos), decimal.mark="," , big.mark = ".")` observaciones (o filas) y `r format(ncol(datos), decimal.mark="," , big.mark = ".")` variables (columnas).
@@ -202,7 +202,7 @@ Otra de las herramientas fundamentales a la hora de trabajar con la estructura d
 Una de las funciones más utilizadas para ello es `merge` del paquete `base` de R. Esta nos permite unir dos tabulados (data frames) que compartan una columna, y que tengan la misma cantidad de filas. 
 
 ```{r merge, echo = T}
-esi2020_m <- readRDS("input/data/ESI2020m.rds") #Cargamos los datos que deseamos unir
+esi2020_m <- readRDS(gzcon(url("https://github.com/learn-R/05-class/blob/main/input/data/ESI2020m.rds?raw=true"))) #Cargamos los datos que deseamos unir
 merge(x = datos, #Unimos el dataframe datos
       y = esi2020_m, #con el dataframe esi2020_m
       by = c("sexo", "ing_tot")) #a partir de las columnas "sexo" e "ing_tot"
