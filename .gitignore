@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+input/data/ESI2020.dta
+R/Construccion data proc.R
