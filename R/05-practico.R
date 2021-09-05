@@ -5,29 +5,43 @@
 # 1. Instalación de paquetes ----------------------------------------------
 
 library(pacman)
-pacman::p_load(tidyverse,
-               tidyr,
-               lubridate)
+pacman::p_load(tidyverse, #Universo de librerías para manipular datos
+               tidyr, #Para pivotear la estructura de los datos
+               dplyr) #Para manipular datos 
 
 
 # 2. Importar datos ---------------------------------------------------------
 
-datos <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+datos <- readRDS(gzcon(url("https://github.com/learn-R/05-class/blob/main/input/data/ESI2020.rds?raw=true")))
 
-# 3. Seleccionar columnas -------------------------------------------------
+# 3. Explorar datos -------------------------------------------------
 
-datos <- datos %>% select(-c(3:4))
+frq(datos$sector)
+frq(datos$sexo)
+frq(datos$prevision)
+frq(datos$salud)
+frq(datos$contrato_dur)
+
+descr(datos$ss_t) #Ingresos por sueldo y salarios netos
+descr(datos$svar_t) #Ingresos por sueldos y salarios variables
+descr(datos$reg_t) #Total ingresos por regalías (beneficios entregados por el empleador)
+
+# 4. Agrupar por filas con `rowwise()` ---------------------------------------------------------
+
+datos <- datos %>% #Especificamos que trabajaremos con el dataframe datos
+  rowwise() %>% #Especificamos que agruparemos por filas
+  mutate(ing_tot = sum(ss_t, svar_t, reg_t)) #Creamos una nueva variable llamada ing_tot, 
+                                             #sumando los valores de ss_t, svar_t y reg_t para cada fila 
 
 
-# 4. pivot_longer() ---------------------------------------------------------
+#Des-seleccionamos los datos que no seguiremos usando
+datos <- datos %>% 
+  select(-c(ss_t, svar_t, reg_t))
 
-datos <- datos %>% pivot_longer(cols=-(1:2), names_to = "fecha", values_to = "casos")
 
+# 5. Agrupar por columnas con `group_by()` --------------------------------
 
-## Bonus: Eliminar caracteres con gsub -------------------------------------
-
-datos$fecha <- gsub("X", "", datos$fecha)
-
-# 5. pivot_wider() --------------------------------------------------------
-
-datos <- datos %>% pivot_wider(names_from = "fecha", values_from = "casos")
+datos %>% 
+  group_by(sexo) %>% #Espeficicamos que agruparemos por sexo
+  summarise(media = mean(ing_tot)) #Creamos una columna llamada media, calculando la 
+                                   #media ingresos con la función `mean`

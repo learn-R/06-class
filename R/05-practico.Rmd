@@ -163,9 +163,7 @@ Asimismo, las tablas largas (long) pueden ser transformadas a tablas anchas (wid
 ```{r pivot_wider, echo=TRUE}
 wide <- long %>% #Creamos un nuevo objeto a partir de los datos de long 
   pivot_wider(names_from = "variable", #Pivoteamos, tomando el nombre de las columnas desde la columna "variable"
-              values_from = "value") #%>% #Y los valores desde la columna "value"
-  unnest()  #Desanidamos los valores  
-
+              values_from = "value") 
 ```
 
 Los datos se "ensancharon", pasando a tener `r format( nrow(wide), decimal.mark="," , big.mark = ".")` filas y `r format( ncols(wide), decimal.mark="," , big.mark = ".")` columnas. 
