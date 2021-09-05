@@ -149,12 +149,12 @@ Como ya se señaló, `pivot_longer()`nos permitirá pivotear los datos de manera
 ```{r pivot-longer, echo=TRUE}
 long <- datos %>% #Creamos un nuevo objeto a partir de datos
   select(-ing_tot) %>%  #Des-seleccionamos la variable ing_tot, pues es de class numeric
-  pivot_longer(cols=-1, #Pivoteamos a lo largo todas las columnas salvo la primera (sector) 
+  pivot_longer(cols=-c(1, id), #Pivoteamos a lo largo todas las columnas salvo la primera (sector) 
                names_to = "variable", #Especificamos que la columna "variable" incluirá los nombres de cada una de las columnas pivoteadas
                values_to = "value") #Especificamos que la columna "value" incluirá los valores de cada una de las columnas pivoteadas
 ```
 
-Podemos darnos cuenta de que ahora nuestro set de datos sólo contiene 3 columnas, pero `r format( nrow(long), decimal.mark="," , big.mark = ".")` filas. Podemos darnos cuenta que ahora, cada cuatro columnas, tenemos a un sujeto de la muestra. 
+Podemos darnos cuenta de que ahora nuestro set de datos sólo contiene 4 columnas, pero `r format( nrow(long), decimal.mark="," , big.mark = ".")` filas. Podemos darnos cuenta que ahora, cada cuatro columnas, tenemos a un sujeto de la muestra. 
 
 ### b) `pivot_wider`
 
@@ -163,7 +163,7 @@ Asimismo, las tablas largas (long) pueden ser transformadas a tablas anchas (wid
 ```{r pivot_wider, echo=TRUE}
 wide <- long %>% #Creamos un nuevo objeto a partir de los datos de long 
   pivot_wider(names_from = "variable", #Pivoteamos, tomando el nombre de las columnas desde la columna "variable"
-              values_from = "value") %>% #Y los valores desde la columna "value"
+              values_from = "value") #%>% #Y los valores desde la columna "value"
   unnest()  #Desanidamos los valores  
 
 ```
