@@ -138,7 +138,7 @@ datos %>%
 
 En este caso, obtenemos dos tablas: una por cada `sexo`, cada una indicando las estadísticas de resumen para la variable `ing_tot`
 
-## 5. Manipulación de datos (tidydata)
+## 6. Manipulación de datos (tidydata)
 
 Otra de las librerías de `tidyverse` que resulta de gran utilidad es `tidyr`. En este caso, cada una de las filas de nuestros datos indican a un sujeto (el cual constituye la unidad de análisis). Las funciones `pivot_longer()` y `pivot_wider()` de la librería anteriormente señalada nos permitirán pivotear los datos, para transformarlos a un dataframe de formato **long** (largo) o **wide** (ancho), respectivamente. 
 
@@ -168,7 +168,7 @@ wide <- long %>% #Creamos un nuevo objeto a partir de los datos de long
 
 Los datos se "ensancharon", pasando a tener `r format( nrow(wide), decimal.mark="," , big.mark = ".")` filas y `r format( ncols(wide), decimal.mark="," , big.mark = ".")` columnas. 
 
-## 6. `separate()`
+## 7. `separate()`
 
 La función `separate()` de `tidyr` nos permite convertir un character individual de una columna en múltiples columnas. En este caso, crearemos una nueva variable `sobre_prom`, que nos indicará si los ingresos de los sujetos están por sobre o por debajo de la media de ingresos. Luego, separaremos la primera y la segunda palabra (caracteres) de cada unos de los valores en dos columnas distintas.
 
@@ -180,7 +180,7 @@ separate <- datos %>% #Creamos un nuevo objeto desde datos
            into = c("sobre_o_bajo", "media")) #Especificamos en cuántas columnas queremos separar los characteres, y cómo se llamarán tales columnas
 ```
 
-## 7. `unite()`
+## 8. `unite()`
 
 También podemos unir caracteres de columnas distintas, con la función `unite()` de `tidyr`. En este caso, volveremos a unir las columnas ¿Sobre o bajo? y Media en una sola, llamada sobre_prom. Por defecto, `unite()` une los caracteres con guiones bajos (_). Podemos especificar un nuevo separador con el argumento `sep`. En este caso, el separador será un espacio (" ")
 
@@ -191,7 +191,7 @@ separate <- separate %>% #Modificamos el objeto separate
         sep = " ") #Especificamos el separador
 ```
 
-## 8. Unir datos 
+## 9. Unir datos 
 
 Otra de las herramientas fundamentales a la hora de trabajar con la estructura de los datos es unir dos tabulados distintos con los cuales estemos trabajando. 
 
